@@ -7,6 +7,8 @@ import 'package:kasie_transie_library/data/schemas.dart' as lib;
 import 'package:kasie_transie_library/l10n/translation_handler.dart';
 import 'package:kasie_transie_library/utils/navigator_utils.dart';
 import 'package:kasie_transie_library/utils/prefs.dart';
+import 'package:kasie_transie_library/widgets/car_list.dart';
+import 'package:kasie_transie_library/widgets/language_and_color_chooser.dart';
 import 'package:kasie_transie_library/widgets/number_widget.dart';
 import 'package:kasie_transie_route_builder/ui/cellphone_auth_signin.dart';
 
@@ -67,6 +69,16 @@ class _DashboardState extends State<Dashboard> {
       busy = false;
     });
   }
+  Future<void> _navigateToCarList() async {
+    var car = await navigateWithScale(CarList(ownerId: user!.userId,), context);
+    pp('$mm .... back from car list');
+    //todo navigate to car detail
+
+  }
+  void _navigateToColor() async {
+    pp('$mm navigate to color ...');
+    navigateWithScale(const LanguageAndColorChooser(), context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +90,11 @@ class _DashboardState extends State<Dashboard> {
           style: myTextStyleLarge(context),
         ),
         actions: [
+          IconButton(
+              onPressed: () {
+               _navigateToColor();
+              },
+              icon: const Icon(Icons.color_lens)),
           IconButton(
               onPressed: () {
                 _getData(true);
@@ -107,19 +124,24 @@ class _DashboardState extends State<Dashboard> {
                       padding: const EdgeInsets.all(24.0),
                       child: Column(
                         children: [
-                          Row(mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(
-                                height: 64,
-                              ),
-                              const Text('Number of Cars'),
-                              const SizedBox(width: 12,),
-                              Text('${cars.length}',
-                                style: myTextStyleMediumLargeWithColor(context, Theme.of(context).primaryColor,
-                                    28),),
-                            ],
+                          GestureDetector(
+                            onTap: (){
+                              _navigateToCarList();
+                            },
+                            child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const SizedBox(
+                                  height: 64,
+                                ),
+                                const Text('Number of Cars'),
+                                const SizedBox(width: 12,),
+                                Text('${cars.length}',
+                                  style: myTextStyleMediumLargeWithColor(context, Theme.of(context).primaryColor,
+                                      28),),
+                              ],
+                            ),
                           ),
-                          Text(user!.name, style: myTextStyleSmall(context),),
+                          user == null? const Text('Name'): Text(user!.name, style: myTextStyleSmall(context),),
 
                           const SizedBox(
                             height: 64,

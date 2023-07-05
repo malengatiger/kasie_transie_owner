@@ -55,7 +55,7 @@ class _SplashWidgetState extends State<SplashWidget> {
                   // const FaIcon(FontAwesomeIcons.anchorCircleCheck),
 
                   Text(
-                    message == null ? 'KasieTransie, here we come!' : message!,
+                    message == null ? 'We help you work better and smarter!' : message!,
                     style: myTextStyleSmall(context),
                   ),
                   const SizedBox(

@@ -1,0 +1,13 @@
+[
+  {"key": "numberOfCars", "text": "Number of Cars"},
+  {"key": "vehicles", "text": "Vehicles"},
+  {"key": "search", "text": "Search"},
+  {"key": "refresh", "text": "Refresh Data"},
+  {"key": "searchVehicles", "text": "Search Vehicles"},
+  {"key": "tapToClose", "text": "Tap anywhere to close"},
+  {"key": "numberOfDays", "text": "Number of Days"},
+  {"key": "waiting", "text": "Waiting for Godot!"},
+  {"key": "ownerDash", "text": "Owner Dashboard"},
+  {"key": "weHelp", "text": "We help you work better and smarter!"}
+
+]
