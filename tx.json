@@ -1,13 +1,18 @@
 [
-  {"key": "numberOfCars", "text": "Number of Cars"},
-  {"key": "vehicles", "text": "Vehicles"},
-  {"key": "search", "text": "Search"},
+  {"key": "historyCars", "text": "History for all taxis"},
+  {"key": "historyCar", "text": "History for this taxi"},
+  {"key": "days", "text": "Days"},
+  {"key": "requestLocation", "text": "Request Current Location"},
+  {"key": "locationResponse", "text": "Taxi Current Location Received"},
+  {"key": "date", "text": "Date"},
+  {"key": "taxiCurrentLocation", "text": "Taxi Current Location"},
+  {"key": "getDirections", "text": "Get Directions"},
+  {"key": "totalPassenger", "text": "Total Dispatched Passengers"},
+  {"key": "taxiOnRoute", "text": "Taxi currently on the Taxi Route"},
+  {"key": "taxiNotOnRoute", "text": "Taxi is not on any Taxi Route"},
+
   {"key": "refresh", "text": "Refresh Data"},
-  {"key": "searchVehicles", "text": "Search Vehicles"},
-  {"key": "tapToClose", "text": "Tap anywhere to close"},
-  {"key": "numberOfDays", "text": "Number of Days"},
-  {"key": "waiting", "text": "Waiting for Godot!"},
-  {"key": "ownerDash", "text": "Owner Dashboard"},
-  {"key": "weHelp", "text": "We help you work better and smarter!"}
+  {"key": "locationRequestSent", "text": "Vehicle Location Request has been sent"},
+
 
 ]

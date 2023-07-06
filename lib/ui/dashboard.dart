@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:kasie_transie_library/bloc/data_api_dog.dart';
 import 'package:kasie_transie_library/bloc/list_api_dog.dart';
 import 'package:kasie_transie_library/data/big_bag.dart';
+import 'package:kasie_transie_library/messaging/fcm_bloc.dart';
 import 'package:kasie_transie_library/utils/functions.dart';
 import 'package:kasie_transie_library/data/schemas.dart' as lib;
 import 'package:kasie_transie_library/l10n/translation_handler.dart';
 import 'package:kasie_transie_library/utils/navigator_utils.dart';
 import 'package:kasie_transie_library/utils/prefs.dart';
 import 'package:kasie_transie_library/widgets/car_list.dart';
+import 'package:kasie_transie_library/widgets/counts_widget.dart';
+import 'package:kasie_transie_library/widgets/days_drop_down.dart';
 import 'package:kasie_transie_library/widgets/language_and_color_chooser.dart';
 import 'package:kasie_transie_library/widgets/number_widget.dart';
 import 'package:kasie_transie_route_builder/ui/cellphone_auth_signin.dart';
@@ -26,13 +29,26 @@ class _DashboardState extends State<Dashboard> {
   BigBag? bigBag;
   bool busy = false;
   List<lib.Vehicle> cars = [];
+  String? ownerDashboard,
+      numberOfCars,
+      arrivalsText,
+      departuresText,
+      heartbeatText,
+      daysText,
+      historyCars,
+      dispatchesText;
 
   @override
   void initState() {
     super.initState();
+    _initialize();
     _checkAuth();
+    _setTexts();
   }
 
+  void _initialize() async {
+    fcmBloc.subscribeToTopics();
+  }
   void _checkAuth() async {
     user = await prefs.getUser();
     if (user == null) {
@@ -40,6 +56,20 @@ class _DashboardState extends State<Dashboard> {
     } else {
       _getData(false);
     }
+  }
+
+  void _setTexts() async {
+    var c = await prefs.getColorAndLocale();
+    numberOfCars = await translator.translate('numberOfCars', c.locale);
+    arrivalsText = await translator.translate('arrivals', c.locale);
+    departuresText = await translator.translate('departures', c.locale);
+    heartbeatText = await translator.translate('heartbeats', c.locale);
+    dispatchesText = await translator.translate('dispatches', c.locale);
+    ownerDashboard = await translator.translate('ownerDash', c.locale);
+    daysText = await translator.translate('days', c.locale);
+    historyCars = await translator.translate('historyCars', c.locale);
+
+    setState(() {});
   }
 
   void _navigateToSignIn() async {
@@ -69,16 +99,23 @@ class _DashboardState extends State<Dashboard> {
       busy = false;
     });
   }
-  Future<void> _navigateToCarList() async {
-    var car = await navigateWithScale(CarList(ownerId: user!.userId,), context);
-    pp('$mm .... back from car list');
-    //todo navigate to car detail
 
+  Future<void> _navigateToCarList() async {
+    var car = await navigateWithScale(
+        CarList(
+          ownerId: user!.userId,
+        ),
+        context);
+    pp('$mm .... back from car list');
   }
+
   void _navigateToColor() async {
     pp('$mm navigate to color ...');
-    navigateWithScale(const LanguageAndColorChooser(), context);
+    await navigateWithScale(const LanguageAndColorChooser(), context);
+    _setTexts();
   }
+
+  int days = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -86,20 +123,23 @@ class _DashboardState extends State<Dashboard> {
         child: Scaffold(
       appBar: AppBar(
         title: Text(
-          'Owner Dashboard',
-          style: myTextStyleLarge(context),
+          ownerDashboard == null ? 'Owner Dashboard' : ownerDashboard!,
+          style: myTextStyleMediumLarge(context, 24),
         ),
         actions: [
           IconButton(
               onPressed: () {
-               _navigateToColor();
+                _navigateToColor();
               },
-              icon: const Icon(Icons.color_lens)),
+              icon: Icon(
+                Icons.color_lens,
+                color: Theme.of(context).primaryColor,
+              )),
           IconButton(
               onPressed: () {
                 _getData(true);
               },
-              icon: const Icon(Icons.refresh)),
+              icon: Icon(Icons.refresh, color: Theme.of(context).primaryColor)),
         ],
       ),
       body: busy
@@ -125,55 +165,97 @@ class _DashboardState extends State<Dashboard> {
                       child: Column(
                         children: [
                           GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               _navigateToCarList();
                             },
-                            child: Row(mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const SizedBox(
-                                  height: 64,
+                            child: Card(
+                              shape: getRoundedBorder(radius: 16),
+                              elevation: 6,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const SizedBox(
+                                      height: 64,
+                                    ),
+                                    Text(numberOfCars == null
+                                        ? 'Number of Cars'
+                                        : numberOfCars!),
+                                    const SizedBox(
+                                      width: 12,
+                                    ),
+                                    Text(
+                                      '${cars.length}',
+                                      style: myTextStyleMediumLargeWithColor(
+                                          context,
+                                          Theme.of(context).primaryColor,
+                                          36),
+                                    ),
+                                  ],
                                 ),
-                                const Text('Number of Cars'),
-                                const SizedBox(width: 12,),
-                                Text('${cars.length}',
-                                  style: myTextStyleMediumLargeWithColor(context, Theme.of(context).primaryColor,
-                                      28),),
-                              ],
+                              ),
                             ),
                           ),
-                          user == null? const Text('Name'): Text(user!.name, style: myTextStyleSmall(context),),
-
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          user == null
+                              ? const Text('....')
+                              : Text(
+                                  user!.name,
+                                  style: myTextStyleSmall(context),
+                                ),
                           const SizedBox(
                             height: 64,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'History for all cars',
+                                style: myTextStyleMedium(context),
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                '$days',
+                                style: myTextStyleMediumLargeWithColor(context,
+                                    Theme.of(context).primaryColor, 24),
+                              ),
+                              const SizedBox(
+                                width: 28,
+                              ),
+                              DaysDropDown(
+                                  onDaysPicked: (d) {
+                                    setState(() {
+                                      days = d;
+                                    });
+                                    _getData(true);
+                                  },
+                                  hint: 'Days'),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 48,
                           ),
                           bigBag == null
                               ? const SizedBox()
                               : Expanded(
-                                  child: GridView(
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          crossAxisSpacing: 2,
-                                          mainAxisSpacing: 2),
-                                  children: [
-                                    NumberWidget(
-                                      title: 'Arrivals',
-                                      number: bigBag!.vehicleArrivals.length,
-                                    ),
-                                    NumberWidget(
-                                      title: 'Departures',
-                                      number: bigBag!.vehicleDepartures.length,
-                                    ),
-                                    NumberWidget(
-                                      title: 'Dispatches',
-                                      number: bigBag!.dispatchRecords.length,
-                                    ),
-                                    NumberWidget(
-                                      title: 'Heartbeats',
-                                      number: bigBag!.vehicleHeartbeats.length,
-                                    ),
-                                  ],
-                                ))
+                                  child: CountsGridWidget(
+                                    arrivalsText: arrivalsText!,
+                                    departuresText: departuresText!,
+                                    dispatchesText: dispatchesText!,
+                                    heartbeatText: heartbeatText!,
+                                    arrivals: bigBag!.vehicleArrivals.length,
+                                    departures:
+                                        bigBag!.vehicleDepartures.length,
+                                    heartbeats:
+                                        bigBag!.vehicleHeartbeats.length,
+                                    dispatches: bigBag!.dispatchRecords.length,
+                                  ),
+                                )
                         ],
                       ),
                     ),
