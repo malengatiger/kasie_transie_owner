@@ -158,12 +158,12 @@ class _DashboardState extends State<Dashboard> {
           : Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(4.0),
                   child: Card(
                     shape: getRoundedBorder(radius: 16),
                     elevation: 4,
                     child: Padding(
-                      padding: const EdgeInsets.all(24.0),
+                      padding: const EdgeInsets.all(12.0),
                       child: Column(
                         children: [
                           GestureDetector(
@@ -219,7 +219,7 @@ class _DashboardState extends State<Dashboard> {
                                 style: myTextStyleMedium(context),
                               ),
                               const SizedBox(
-                                width: 8,
+                                width: 4,
                               ),
                               Text(
                                 '$days',
@@ -227,7 +227,7 @@ class _DashboardState extends State<Dashboard> {
                                     Theme.of(context).primaryColor, 24),
                               ),
                               const SizedBox(
-                                width: 36,
+                                width: 12,
                               ),
                               DaysDropDown(
                                   onDaysPicked: (d) {

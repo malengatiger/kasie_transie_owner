@@ -6,6 +6,7 @@ import 'package:kasie_transie_library/bloc/data_api_dog.dart';
 import 'package:kasie_transie_library/bloc/list_api_dog.dart';
 import 'package:kasie_transie_library/isolates/routes_isolate.dart';
 import 'package:kasie_transie_library/l10n/translation_handler.dart';
+import 'package:kasie_transie_library/messaging/fcm_bloc.dart';
 import 'package:kasie_transie_library/utils/emojis.dart';
 import 'package:kasie_transie_library/utils/functions.dart';
 import 'package:kasie_transie_library/utils/prefs.dart';
@@ -144,6 +145,7 @@ class CellPhoneAuthSigninState extends State<CellPhoneAuthSignin>
         }
       }
       pp('$mm KasieTransie; my country the beloved:  🍎 ${myCountry!.name!} 🍎');
+      fcmBloc.subscribeToTopics();
       return user!;
     } else {
       if (mounted) {
