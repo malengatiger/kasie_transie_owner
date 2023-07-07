@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kasie_transie_library/bloc/data_api_dog.dart';
 import 'package:kasie_transie_library/bloc/list_api_dog.dart';
 import 'package:kasie_transie_library/data/big_bag.dart';
+import 'package:kasie_transie_library/isolates/routes_isolate.dart';
 import 'package:kasie_transie_library/messaging/fcm_bloc.dart';
 import 'package:kasie_transie_library/utils/functions.dart';
 import 'package:kasie_transie_library/data/schemas.dart' as lib;
@@ -48,6 +49,7 @@ class _DashboardState extends State<Dashboard> {
 
   void _initialize() async {
     fcmBloc.subscribeToTopics();
+
   }
   void _checkAuth() async {
     user = await prefs.getUser();
@@ -88,7 +90,7 @@ class _DashboardState extends State<Dashboard> {
         busy = true;
       });
       user = await prefs.getUser();
-      final date = DateTime.now().toUtc().subtract(const Duration(days: 90));
+      final date = DateTime.now().toUtc().subtract( Duration(days: days));
       cars = await listApiDog.getOwnerVehicles(user!.userId!, refresh);
       bigBag =
           await listApiDog.getOwnersBag(user!.userId!, date.toIso8601String());
@@ -115,7 +117,7 @@ class _DashboardState extends State<Dashboard> {
     _setTexts();
   }
 
-  int days = 0;
+  int days = 14;
 
   @override
   Widget build(BuildContext context) {
@@ -212,8 +214,8 @@ class _DashboardState extends State<Dashboard> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                'History for all cars',
+                              Text(historyCars == null?
+                                'History for all cars':historyCars!,
                                 style: myTextStyleMedium(context),
                               ),
                               const SizedBox(
@@ -225,7 +227,7 @@ class _DashboardState extends State<Dashboard> {
                                     Theme.of(context).primaryColor, 24),
                               ),
                               const SizedBox(
-                                width: 28,
+                                width: 36,
                               ),
                               DaysDropDown(
                                   onDaysPicked: (d) {
@@ -234,7 +236,7 @@ class _DashboardState extends State<Dashboard> {
                                     });
                                     _getData(true);
                                   },
-                                  hint: 'Days'),
+                                  hint: daysText == null? 'Days' : daysText!),
                             ],
                           ),
                           const SizedBox(
