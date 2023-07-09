@@ -1,8 +1,6 @@
 
 9
 	README.md,8/e/8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d
-<
-pubspec.yaml,e/8/e8e045469170189f1d6ef12576bd01af132b1018
 E
 test/widget_test.dart,8/8/88fe0f60a6af31ca841a0d74d4ee9642f8d32eb2
 D
@@ -11,10 +9,6 @@ D
 ,assets/payment/default_apple_pay_config.json,2/5/25b90fabe17d728a33a0a331cf5d4b1aae511479
 ]
 -assets/payment/default_google_pay_config.json,6/f/6ffedcfda8515a0ff6c83ef139a9ce49329eb2b5
-Q
-!.idea/libraries/Dart_Packages.xml,f/c/fc67c2d2441e33af1dbd1e910281523d1ce74b4a
-S
-#.idea/libraries/Flutter_Plugins.xml,e/8/e8bbc0fdfcefee9aa7b463c83a8a480b92333860
 P
  android/app/google-services.json,e/e/ee748fb75df5665a631a74614646f499f3cea78f
 U
@@ -57,3 +51,5 @@ H
 android/app/build.gradle,5/9/594ba479000e0bb5513707b709ad1cd52da9063a
 ^
 .android/app/src/main/res/drawable/app_icon.xml,4/1/41be73f05525cc44d6c6cf9f8c491ad0a1dae296
+G
+kasie_transie_owner.iml,c/c/cc6ec8303d707d4b4f2a1f6dc0b20c67b14113f8

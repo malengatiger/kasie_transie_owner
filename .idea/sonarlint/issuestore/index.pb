@@ -1,16 +1,10 @@
 
 9
 	README.md,8/e/8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d
-<
-pubspec.yaml,e/8/e8e045469170189f1d6ef12576bd01af132b1018
 E
 test/widget_test.dart,8/8/88fe0f60a6af31ca841a0d74d4ee9642f8d32eb2
 D
 android/build.gradle,1/3/13f012f60e18f38225ce59137db2e07d5d70b29c
-Q
-!.idea/libraries/Dart_Packages.xml,f/c/fc67c2d2441e33af1dbd1e910281523d1ce74b4a
-S
-#.idea/libraries/Flutter_Plugins.xml,e/8/e8bbc0fdfcefee9aa7b463c83a8a480b92333860
 W
 'android/kasie_transie_owner_android.iml,9/c/9c66df6175ee191dcb44fb5b6a539561569cf51f
 U
@@ -57,3 +51,5 @@ X
 (android/app/src/main/AndroidManifest.xml,e/f/ef79bfd51db69a15dbf5807c05bb249bdccb0556
 ^
 .android/app/src/main/res/drawable/app_icon.xml,4/1/41be73f05525cc44d6c6cf9f8c491ad0a1dae296
+G
+kasie_transie_owner.iml,c/c/cc6ec8303d707d4b4f2a1f6dc0b20c67b14113f8
