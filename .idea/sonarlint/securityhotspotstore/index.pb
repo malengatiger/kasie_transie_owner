@@ -45,8 +45,6 @@ G
 lib/ui/splash_page.dart,5/f/5f9e652dda9ad4f9523c9de42b40d8c6792d5da2
 7
 tx.json,a/1/a1bda1d587e885a5080fd9cad71d2a1a552b9664
-X
-(android/app/src/main/AndroidManifest.xml,e/f/ef79bfd51db69a15dbf5807c05bb249bdccb0556
 H
 android/app/build.gradle,5/9/594ba479000e0bb5513707b709ad1cd52da9063a
 ^

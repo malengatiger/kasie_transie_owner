@@ -145,7 +145,7 @@ class CellPhoneAuthSigninState extends State<CellPhoneAuthSignin>
         }
       }
       pp('$mm KasieTransie; my country the beloved:  🍎 ${myCountry!.name!} 🍎');
-      fcmBloc.subscribeToTopics();
+      fcmBloc.subscribeToTopics('OwnerApp');
       return user!;
     } else {
       if (mounted) {

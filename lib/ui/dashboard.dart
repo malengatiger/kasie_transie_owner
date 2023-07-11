@@ -48,7 +48,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void _initialize() async {
-    fcmBloc.subscribeToTopics();
+    fcmBloc.subscribeToTopics('OwnerApp');
 
   }
   void _checkAuth() async {

@@ -47,8 +47,6 @@ G
 tx.json,a/1/a1bda1d587e885a5080fd9cad71d2a1a552b9664
 H
 android/app/build.gradle,5/9/594ba479000e0bb5513707b709ad1cd52da9063a
-X
-(android/app/src/main/AndroidManifest.xml,e/f/ef79bfd51db69a15dbf5807c05bb249bdccb0556
 ^
 .android/app/src/main/res/drawable/app_icon.xml,4/1/41be73f05525cc44d6c6cf9f8c491ad0a1dae296
 G
