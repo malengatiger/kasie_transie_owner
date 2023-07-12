@@ -27,8 +27,6 @@ H
 assets/files/people.json,2/6/269cbb9a0f278b6a1ae99db402d681b91ddb04d1
 =
 macos/Podfile,6/4/64d67c25b6ef192830bfd3132cbb847fff8cb5b9
-I
-lib/generated/assets.dart,5/b/5b815209f3ac1d4b94a4211dbfb903428d4ed1c2
 ;
 ios/Podfile,5/1/510807778b56990ed3829592aea48d7a35b42809
 B

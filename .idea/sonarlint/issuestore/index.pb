@@ -13,8 +13,6 @@ U
 %.idea/libraries/KotlinJavaRuntime.xml,0/2/02ddf5725f2ec9b67991423205d2b1a2009ccd06
 L
 .idea/libraries/Dart_SDK.xml,a/9/a9cc79449f536988c9a3fd2c84e3dfda3be04f09
-I
-lib/generated/assets.dart,5/b/5b815209f3ac1d4b94a4211dbfb903428d4ed1c2
 \
 ,assets/payment/default_apple_pay_config.json,2/5/25b90fabe17d728a33a0a331cf5d4b1aae511479
 ]

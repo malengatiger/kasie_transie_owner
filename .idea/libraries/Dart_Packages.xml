@@ -1437,13 +1437,6 @@
             </list>
           </value>
         </entry>
-        <entry key="restart_app">
-          <value>
-            <list>
-              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/restart_app-1.2.1/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="riverpod">
           <value>
             <list>
@@ -1969,7 +1962,6 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/realm_common-1.2.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/realm_generator-1.2.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/responsive_builder-0.7.0/lib" />
-      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/restart_app-1.2.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/riverpod-2.3.6/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/rxdart-0.27.7/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/sane_uuid-1.0.0-alpha.4/lib" />
