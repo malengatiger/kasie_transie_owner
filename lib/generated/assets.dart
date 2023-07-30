@@ -33,6 +33,7 @@ class Assets {
   static const String introPic7 = 'assets/intro/pic7.jpg';
   static const String introSmall = 'assets/intro/small.jpg';
   static const String introThanks = 'assets/intro/thanks.webp';
+  static const String kasieTransieOwner = '.env';
   static const String l10nAf = 'assets/l10n/af.json';
   static const String l10nDe = 'assets/l10n/de.json';
   static const String l10nEn = 'assets/l10n/en.json';

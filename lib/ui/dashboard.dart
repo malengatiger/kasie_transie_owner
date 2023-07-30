@@ -1,22 +1,26 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:kasie_transie_library/bloc/data_api_dog.dart';
 import 'package:kasie_transie_library/bloc/list_api_dog.dart';
 import 'package:kasie_transie_library/data/big_bag.dart';
+import 'package:kasie_transie_library/data/color_and_locale.dart';
 import 'package:kasie_transie_library/data/schemas.dart' as lib;
+import 'package:kasie_transie_library/isolates/vehicles_isolate.dart';
 import 'package:kasie_transie_library/l10n/translation_handler.dart';
+import 'package:kasie_transie_library/maps/association_route_maps.dart';
 import 'package:kasie_transie_library/messaging/fcm_bloc.dart';
 import 'package:kasie_transie_library/utils/emojis.dart';
 import 'package:kasie_transie_library/utils/functions.dart';
 import 'package:kasie_transie_library/utils/navigator_utils.dart';
 import 'package:kasie_transie_library/utils/prefs.dart';
+import 'package:kasie_transie_library/widgets/auth/cell_auth_signin.dart';
+import 'package:kasie_transie_library/widgets/auth/damn_email_link.dart';
 import 'package:kasie_transie_library/widgets/car_list.dart';
 import 'package:kasie_transie_library/widgets/counts_widget.dart';
 import 'package:kasie_transie_library/widgets/days_drop_down.dart';
 import 'package:kasie_transie_library/widgets/language_and_color_chooser.dart';
+import 'package:kasie_transie_library/widgets/scanners/scan_vehicle_for_owner.dart';
 import 'package:kasie_transie_library/widgets/timer_widget.dart';
-import 'package:kasie_transie_route_builder/ui/cellphone_auth_signin.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -26,7 +30,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  final mm = '🥬🥬🥬🥬🥬🥬 Dashboard: 😡';
+  final mm = '🥬🥬🥬🥬🥬🥬Owner Dashboard: 😡';
 
   lib.User? user;
   BigBag? bigBag;
@@ -47,13 +51,32 @@ class _DashboardState extends State<Dashboard> {
 
   late StreamSubscription<lib.DispatchRecord> dispatchStreamSub;
   late StreamSubscription<lib.AmbassadorPassengerCount> passengerStreamSub;
+  late StreamSubscription<lib.VehicleArrival> arrivalStreamSub;
+  late StreamSubscription<lib.VehicleDeparture> departureStreamSub;
+  late StreamSubscription<lib.LocationResponse> locResponseStreamSub;
+
+
+
+  String notRegistered =
+      'You are not registered yet. Please call your administrator';
+  String emailNotFound = 'emailNotFound';
+  String welcome = 'Welcome';
+  String firstTime =
+      'This is the first time that you have opened the app and you '
+      'need to sign in to your Taxi Association.';
+  String changeLanguage = 'Change Language or Color';
+  String startEmailLinkSignin = 'Start Email Link Sign In';
+  String signInWithPhone = 'Start Phone Sign In';
+  bool _showVerifier = true;
+  bool _showDashboard = true;
+
+  late ColorAndLocale colorAndLocale;
 
   @override
   void initState() {
     super.initState();
     _initialize();
     _checkAuth();
-    _setTexts();
   }
 
   @override
@@ -61,11 +84,33 @@ class _DashboardState extends State<Dashboard> {
     dispatchStreamSub.cancel();
     passengerStreamSub.cancel();
     super.dispose();
-
-
   }
+
   void _initialize() async {
-    fcmBloc.subscribeToTopics('OwnerApp');
+
+    fcmBloc.subscribeForOwnerMarshalOfficialAmbassador('OwnerApp');
+    departureStreamSub =
+        fcmBloc.vehicleDepartureStream.listen((lib.VehicleDeparture departure) {
+          pp('$mm ... fcmBloc.vehicleDepartureStream delivered vehicle departure for: ${departure.vehicleReg}');
+          if (mounted) {
+            setState(() {});
+          }
+        });
+    locResponseStreamSub =
+        fcmBloc.locationResponseStream.listen((lib.LocationResponse locationResponse) {
+          pp('$mm ... fcmBloc.locationResponseStream delivered loc response for: ${locationResponse.vehicleReg}');
+          if (mounted) {
+            setState(() {});
+          }
+        });
+    arrivalStreamSub =
+        fcmBloc.vehicleArrivalStream.listen((lib.VehicleArrival vehicleArrival) {
+          pp('$mm ... fcmBloc.dispatchStream delivered dispatch for: ${vehicleArrival.vehicleReg}');
+          bigBag!.vehicleArrivals.add(vehicleArrival);
+          if (mounted) {
+            setState(() {});
+          }
+        });
     dispatchStreamSub =
         fcmBloc.dispatchStream.listen((lib.DispatchRecord dRec) {
       pp('$mm ... fcmBloc.dispatchStream delivered dispatch for: ${dRec.vehicleReg}');
@@ -87,15 +132,23 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void _checkAuth() async {
+    await _setTexts();
     user = await prefs.getUser();
     if (user == null) {
-      _navigateToSignIn();
+      setState(() {
+        _showVerifier = true;
+        _showDashboard = false;
+      });
     } else {
+      setState(() {
+        _showVerifier = false;
+        _showDashboard = true;
+      });
       _getData(false);
     }
   }
 
-  void _setTexts() async {
+  Future _setTexts() async {
     var c = await prefs.getColorAndLocale();
     numberOfCars = await translator.translate('numberOfCars', c.locale);
     arrivalsText = await translator.translate('arrivals', c.locale);
@@ -110,17 +163,41 @@ class _DashboardState extends State<Dashboard> {
     thisMayTakeMinutes =
         await translator.translate('thisMayTakeMinutes', c.locale);
     errorGettingData = await translator.translate('errorGettingData', c.locale);
-
+    emailNotFound =
+        await translator.translate('emailNotFound', c.locale);
+    notRegistered =
+        await translator.translate('notRegistered', c.locale);
+    firstTime = await translator.translate('firstTime', c.locale);
+    changeLanguage =
+        await translator.translate('changeLanguage', c.locale);
+    welcome = await translator.translate('welcome', c.locale);
+    startEmailLinkSignin =
+        await translator.translate('signInWithEmail', c.locale);
+    signInWithPhone =
+        await translator.translate('signInWithPhone', c.locale);
     setState(() {});
   }
 
-  void _navigateToSignIn() async {
-    pp('$mm ... _navigateToSignIn ...');
-    var res = await navigateWithScale(
-        CellPhoneAuthSignin(dataApiDog: dataApiDog), context);
-    pp('\n\nmm .... back from sign in : $res');
+  Future _navigateToColor() async {
+    pp('$mm _navigateToColor ......');
+    await navigateWithScale( LanguageAndColorChooser(onLanguageChosen: (){},), context);
+    colorAndLocale = await prefs.getColorAndLocale();
+    await _setTexts();
+  }
+
+  Future<void> _navigateToEmailAuth() async {
+    var res = await navigateWithScale( DamnEmailLink(onLanguageChosen: (){},), context);
+    pp('\n\n$mm ................ back from sign in: $res');
+    user = await prefs.getUser();
     _getData(false);
   }
+
+  Future<void> _navigateToMaps() async {
+    await navigateWithScale(const AssociationRouteMaps(), context);
+    user = await prefs.getUser();
+    _getData(false);
+  }
+
 
   int totalPassengers = 0;
 
@@ -176,7 +253,7 @@ class _DashboardState extends State<Dashboard> {
       bigBag =
           await listApiDog.getOwnersBag(user!.userId!, date.toIso8601String());
 
-      pp('$mm _getData: ${E.appleRed} '
+      pp('$mm _getData .. owner bag: ${E.appleRed} '
           '\n🔴 cars: ${cars.length} '
           '\n🔴 vehicleHeartbeats: ${bigBag?.vehicleHeartbeats.length} '
           '\n🔴 vehicleArrivals: ${bigBag?.vehicleArrivals.length} '
@@ -201,7 +278,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _navigateToCarList() async {
-    var car = await navigateWithScale(
+    await navigateWithScale(
         CarList(
           ownerId: user!.userId,
         ),
@@ -209,10 +286,11 @@ class _DashboardState extends State<Dashboard> {
     pp('$mm .... back from car list');
   }
 
-  void _navigateToColor() async {
-    pp('$mm navigate to color ...');
-    await navigateWithScale(const LanguageAndColorChooser(), context);
-    _setTexts();
+  Future<void> _navigateToScanner() async {
+    await navigateWithScale(
+        const ScanVehicleForOwner(),
+        context);
+    pp('$mm .... back from car update');
   }
 
   int days = 1;
@@ -224,7 +302,7 @@ class _DashboardState extends State<Dashboard> {
       appBar: AppBar(
         title: Text(
           ownerDashboard == null ? 'Owner Dashboard' : ownerDashboard!,
-          style: myTextStyleMediumLarge(context, 24),
+          style: myTextStyleMediumLarge(context, 18),
         ),
         actions: [
           IconButton(
@@ -237,14 +315,32 @@ class _DashboardState extends State<Dashboard> {
               )),
           IconButton(
               onPressed: () {
-                _refreshBag();
+                _navigateToMaps();
               },
-              icon: Icon(Icons.refresh, color: Theme.of(context).primaryColor)),
+              icon: Icon(
+                Icons.map,
+                color: Theme.of(context).primaryColor,
+              )),
+          IconButton(
+              onPressed: () {
+                _navigateToScanner();
+              },
+              icon: Icon(Icons.airport_shuttle, color: Theme.of(context).primaryColor)),
         ],
       ),
       body: Stack(
         children: [
-          Padding(
+          _showVerifier? CustomPhoneVerification(onUserAuthenticated: (user){
+            setState(() {
+              _showDashboard = true;
+              _showVerifier = false;
+            });
+            _getData(false);
+          }, onError: (){}, onCancel: (){}, onLanguageChosen: (){
+            _setTexts();
+          },): const SizedBox(),
+
+          _showDashboard? Padding(
             padding: const EdgeInsets.all(4.0),
             child: Card(
               shape: getRoundedBorder(radius: 16),
@@ -276,8 +372,10 @@ class _DashboardState extends State<Dashboard> {
                               ),
                               Text(
                                 '${cars.length}',
-                                style: myTextStyleMediumLargeWithColor(context,
-                                    Theme.of(context).primaryColor, 36),
+                                style: myTextStyleMediumLargeWithColor(
+                                    context,
+                                    Theme.of(context).primaryColor,
+                                    36),
                               ),
                             ],
                           ),
@@ -290,9 +388,9 @@ class _DashboardState extends State<Dashboard> {
                     user == null
                         ? const Text('....')
                         : Text(
-                            user!.name,
-                            style: myTextStyleSmall(context),
-                          ),
+                      user!.name,
+                      style: myTextStyleSmall(context),
+                    ),
                     const SizedBox(
                       height: 64,
                     ),
@@ -310,8 +408,8 @@ class _DashboardState extends State<Dashboard> {
                         ),
                         Text(
                           '$days',
-                          style: myTextStyleMediumLargeWithColor(
-                              context, Theme.of(context).primaryColor, 24),
+                          style: myTextStyleMediumLargeWithColor(context,
+                              Theme.of(context).primaryColor, 24),
                         ),
                         const SizedBox(
                           width: 12,
@@ -332,30 +430,33 @@ class _DashboardState extends State<Dashboard> {
                     bigBag == null
                         ? const SizedBox()
                         : Expanded(
-                            child: CountsGridWidget(
-                              passengerCounts: totalPassengers,
-                              arrivalsText: arrivalsText!,
-                              departuresText: departuresText!,
-                              dispatchesText: dispatchesText!,
-                              heartbeatText: heartbeatText!,
-                              arrivals: bigBag!.vehicleArrivals.length,
-                              departures: bigBag!.vehicleDepartures.length,
-                              heartbeats: bigBag!.vehicleHeartbeats.length,
-                              dispatches: bigBag!.dispatchRecords.length,
-                              passengerCountsText: passengerCounts!,
-                            ),
-                          )
+                      child: CountsGridWidget(
+                        passengerCounts: totalPassengers,
+                        arrivalsText: arrivalsText!,
+                        departuresText: departuresText!,
+                        dispatchesText: dispatchesText!,
+                        heartbeatText: heartbeatText!,
+                        arrivals: bigBag!.vehicleArrivals.length,
+                        departures:
+                        bigBag!.vehicleDepartures.length,
+                        heartbeats:
+                        bigBag!.vehicleHeartbeats.length,
+                        dispatches: bigBag!.dispatchRecords.length,
+                        passengerCountsText: passengerCounts!,
+                      ),
+                    )
                   ],
                 ),
               ),
             ),
-          ),
+          ): const SizedBox(),
+
           busy
               ? Positioned(
-                  left: 24,
-                  right: 24,
-                  bottom: 140,
-                  top: 140,
+                  left: 12,
+                  right: 12,
+                  bottom: 60,
+                  top: 60,
                   child: TimerWidget(
                     title: loadingOwnerData == null
                         ? 'Loading Owner data'
@@ -368,5 +469,136 @@ class _DashboardState extends State<Dashboard> {
         ],
       ),
     ));
+  }
+}
+
+class SignInLanding extends StatelessWidget {
+  const SignInLanding(
+      {Key? key,
+      required this.welcome,
+      required this.firstTime,
+      required this.changeLanguage,
+      required this.signInWithPhone,
+      required this.startEmailLinkSignin,
+      required this.onNavigateToEmailAuth,
+      required this.onNavigateToPhoneAuth,
+      required this.onNavigateToColor})
+      : super(key: key);
+
+  final String welcome,
+      firstTime,
+      changeLanguage,
+      signInWithPhone,
+      startEmailLinkSignin;
+  final Function onNavigateToEmailAuth,
+      onNavigateToPhoneAuth,
+      onNavigateToColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+            width: 40,
+            height: 40,
+            child: Image.asset(
+              'assets/gio.png',
+            )),
+        const SizedBox(
+          height: 12,
+        ),
+        Text(
+          welcome,
+          style: myTextStyleMediumLargeWithColor(
+              context, Theme.of(context).primaryColorLight, 40),
+        ),
+        const SizedBox(
+          height: 32,
+        ),
+        Text(
+          firstTime,
+          style: myTextStyleMedium(context),
+        ),
+        const SizedBox(
+          height: 24,
+        ),
+        SizedBox(
+          width: 300,
+          child: ElevatedButton(
+            style: ButtonStyle(
+              elevation: const MaterialStatePropertyAll(4.0),
+              backgroundColor:
+                  MaterialStatePropertyAll(Theme.of(context).primaryColorLight),
+            ),
+            onPressed: () {
+              onNavigateToColor();
+            },
+            // icon: const Icon(Icons.language),
+
+            child: Text(
+              changeLanguage,
+              style: myTextStyleSmallBlack(context),
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 160,
+        ),
+        SizedBox(
+          width: 340,
+          child: ElevatedButton.icon(
+              onPressed: () {
+                onNavigateToPhoneAuth();
+              },
+              style: ButtonStyle(
+                elevation: const MaterialStatePropertyAll(8.0),
+                backgroundColor:
+                    MaterialStatePropertyAll(Theme.of(context).primaryColor),
+              ),
+              label: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  signInWithPhone,
+                  style: myTextStyleSmallBlack(context),
+                ),
+              ),
+              icon: const Icon(Icons.phone)),
+        ),
+        const SizedBox(
+          height: 24,
+        ),
+        Container(
+          color: Theme.of(context).primaryColorLight,
+          width: 160,
+          height: 2,
+        ),
+        const SizedBox(
+          height: 24,
+        ),
+        SizedBox(
+          width: 340,
+          child: ElevatedButton.icon(
+              onPressed: () {
+                onNavigateToEmailAuth();
+              },
+              style: ButtonStyle(
+                elevation: const MaterialStatePropertyAll(8.0),
+                backgroundColor:
+                    MaterialStatePropertyAll(Theme.of(context).primaryColor),
+              ),
+              icon: const Icon(Icons.email),
+              label: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  startEmailLinkSignin,
+                  style: myTextStyleSmallBlack(context),
+                ),
+              )),
+        ),
+        const SizedBox(
+          height: 24,
+        ),
+      ],
+    );
   }
 }
