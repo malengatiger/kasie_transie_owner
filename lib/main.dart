@@ -42,6 +42,7 @@ Future<void> main() async {
     androidPackageName: 'com.boha.kasie_transie_owner',
     // iOSBundleId: 'com.boha.kasieTransieOwner',
   );
+
   await initializeEmailLinkProvider(action);
   errorHandler.sendErrors();
   runApp(const OwnerApp());
