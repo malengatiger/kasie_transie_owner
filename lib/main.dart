@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kasie_transie_library/bloc/theme_bloc.dart';
+import 'package:kasie_transie_library/utils/error_handler.dart';
 import 'package:kasie_transie_library/utils/functions.dart';
 import 'package:kasie_transie_library/widgets/auth/damn_email_link.dart';
 import 'package:kasie_transie_library/widgets/splash_page.dart';
@@ -42,6 +43,7 @@ Future<void> main() async {
     // iOSBundleId: 'com.boha.kasieTransieOwner',
   );
   await initializeEmailLinkProvider(action);
+  errorHandler.sendErrors();
   runApp(const OwnerApp());
 }
 

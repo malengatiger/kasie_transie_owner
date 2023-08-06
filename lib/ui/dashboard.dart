@@ -5,22 +5,23 @@ import 'package:kasie_transie_library/bloc/list_api_dog.dart';
 import 'package:kasie_transie_library/data/big_bag.dart';
 import 'package:kasie_transie_library/data/color_and_locale.dart';
 import 'package:kasie_transie_library/data/schemas.dart' as lib;
-import 'package:kasie_transie_library/isolates/vehicles_isolate.dart';
 import 'package:kasie_transie_library/l10n/translation_handler.dart';
 import 'package:kasie_transie_library/maps/association_route_maps.dart';
 import 'package:kasie_transie_library/messaging/fcm_bloc.dart';
 import 'package:kasie_transie_library/utils/emojis.dart';
+import 'package:kasie_transie_library/utils/error_handler.dart';
 import 'package:kasie_transie_library/utils/functions.dart';
+import 'package:kasie_transie_library/utils/initializer.dart';
 import 'package:kasie_transie_library/utils/navigator_utils.dart';
 import 'package:kasie_transie_library/utils/prefs.dart';
 import 'package:kasie_transie_library/widgets/auth/cell_auth_signin.dart';
 import 'package:kasie_transie_library/widgets/auth/damn_email_link.dart';
-import 'package:kasie_transie_library/widgets/car_list.dart';
 import 'package:kasie_transie_library/widgets/counts_widget.dart';
 import 'package:kasie_transie_library/widgets/days_drop_down.dart';
 import 'package:kasie_transie_library/widgets/language_and_color_chooser.dart';
 import 'package:kasie_transie_library/widgets/scanners/scan_vehicle_for_owner.dart';
 import 'package:kasie_transie_library/widgets/timer_widget.dart';
+import 'package:kasie_transie_library/widgets/vehicle_widgets/car_list.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -223,6 +224,9 @@ class _DashboardState extends State<Dashboard> {
       pp(e);
       if (mounted) {
         showSnackBar(
+          duration: const Duration(seconds: 10),
+            backgroundColor: Colors.redAccent,
+            textStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             message: errorGettingData == null
                 ? 'Error getting data'
                 : errorGettingData!,
@@ -236,7 +240,6 @@ class _DashboardState extends State<Dashboard> {
 
   Future _getData(bool refresh) async {
     pp('$mm .... getting owner data ....');
-    //todo - add feature to pick start date
     try {
       setState(() {
         busy = true;
@@ -264,6 +267,13 @@ class _DashboardState extends State<Dashboard> {
       _calculateTotalPassengers();
     } catch (e) {
       pp(e);
+      if (mounted) {
+        showSnackBar(
+            duration: const Duration(seconds: 10),
+            backgroundColor: Colors.red,
+            textStyle: const TextStyle(color: Colors.white),
+            message: 'Error getting data: $e', context: context);
+      }
     }
     setState(() {
       busy = false;
