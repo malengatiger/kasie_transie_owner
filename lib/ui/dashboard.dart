@@ -9,9 +9,7 @@ import 'package:kasie_transie_library/l10n/translation_handler.dart';
 import 'package:kasie_transie_library/maps/association_route_maps.dart';
 import 'package:kasie_transie_library/messaging/fcm_bloc.dart';
 import 'package:kasie_transie_library/utils/emojis.dart';
-import 'package:kasie_transie_library/utils/error_handler.dart';
 import 'package:kasie_transie_library/utils/functions.dart';
-import 'package:kasie_transie_library/utils/initializer.dart';
 import 'package:kasie_transie_library/utils/navigator_utils.dart';
 import 'package:kasie_transie_library/utils/prefs.dart';
 import 'package:kasie_transie_library/widgets/auth/cell_auth_signin.dart';
@@ -22,16 +20,17 @@ import 'package:kasie_transie_library/widgets/language_and_color_chooser.dart';
 import 'package:kasie_transie_library/widgets/scanners/scan_vehicle_for_owner.dart';
 import 'package:kasie_transie_library/widgets/timer_widget.dart';
 import 'package:kasie_transie_library/widgets/vehicle_widgets/car_list.dart';
+import 'package:kasie_transie_library/widgets/vehicle_widgets/route_assigner.dart';
 
-class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+class OwnerDashboard extends StatefulWidget {
+  const OwnerDashboard({Key? key}) : super(key: key);
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  State<OwnerDashboard> createState() => _OwnerDashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
-  final mm = '🥬🥬🥬🥬🥬🥬Owner Dashboard: 😡';
+class _OwnerDashboardState extends State<OwnerDashboard> {
+  final mm = '🥬🥬🥬🥬🥬🥬 Owner Dashboard: 😡';
 
   lib.User? user;
   BigBag? bigBag;
@@ -56,8 +55,6 @@ class _DashboardState extends State<Dashboard> {
   late StreamSubscription<lib.VehicleDeparture> departureStreamSub;
   late StreamSubscription<lib.LocationResponse> locResponseStreamSub;
 
-
-
   String notRegistered =
       'You are not registered yet. Please call your administrator';
   String emailNotFound = 'emailNotFound';
@@ -68,8 +65,6 @@ class _DashboardState extends State<Dashboard> {
   String changeLanguage = 'Change Language or Color';
   String startEmailLinkSignin = 'Start Email Link Sign In';
   String signInWithPhone = 'Start Phone Sign In';
-  bool _showVerifier = true;
-  bool _showDashboard = true;
 
   late ColorAndLocale colorAndLocale;
 
@@ -88,30 +83,29 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void _initialize() async {
-
     fcmBloc.subscribeForOwnerMarshalOfficialAmbassador('OwnerApp');
     departureStreamSub =
         fcmBloc.vehicleDepartureStream.listen((lib.VehicleDeparture departure) {
-          pp('$mm ... fcmBloc.vehicleDepartureStream delivered vehicle departure for: ${departure.vehicleReg}');
-          if (mounted) {
-            setState(() {});
-          }
-        });
-    locResponseStreamSub =
-        fcmBloc.locationResponseStream.listen((lib.LocationResponse locationResponse) {
-          pp('$mm ... fcmBloc.locationResponseStream delivered loc response for: ${locationResponse.vehicleReg}');
-          if (mounted) {
-            setState(() {});
-          }
-        });
-    arrivalStreamSub =
-        fcmBloc.vehicleArrivalStream.listen((lib.VehicleArrival vehicleArrival) {
-          pp('$mm ... fcmBloc.dispatchStream delivered dispatch for: ${vehicleArrival.vehicleReg}');
-          bigBag!.vehicleArrivals.add(vehicleArrival);
-          if (mounted) {
-            setState(() {});
-          }
-        });
+      pp('$mm ... fcmBloc.vehicleDepartureStream delivered vehicle departure for: ${departure.vehicleReg}');
+      if (mounted) {
+        setState(() {});
+      }
+    });
+    locResponseStreamSub = fcmBloc.locationResponseStream
+        .listen((lib.LocationResponse locationResponse) {
+      pp('$mm ... fcmBloc.locationResponseStream delivered loc response for: ${locationResponse.vehicleReg}');
+      if (mounted) {
+        setState(() {});
+      }
+    });
+    arrivalStreamSub = fcmBloc.vehicleArrivalStream
+        .listen((lib.VehicleArrival vehicleArrival) {
+      pp('$mm ... fcmBloc.dispatchStream delivered dispatch for: ${vehicleArrival.vehicleReg}');
+      bigBag!.vehicleArrivals.add(vehicleArrival);
+      if (mounted) {
+        setState(() {});
+      }
+    });
     dispatchStreamSub =
         fcmBloc.dispatchStream.listen((lib.DispatchRecord dRec) {
       pp('$mm ... fcmBloc.dispatchStream delivered dispatch for: ${dRec.vehicleReg}');
@@ -136,15 +130,8 @@ class _DashboardState extends State<Dashboard> {
     await _setTexts();
     user = await prefs.getUser();
     if (user == null) {
-      setState(() {
-        _showVerifier = true;
-        _showDashboard = false;
-      });
+      _navigateToPhoneAuth();
     } else {
-      setState(() {
-        _showVerifier = false;
-        _showDashboard = true;
-      });
       _getData(false);
     }
   }
@@ -156,7 +143,7 @@ class _DashboardState extends State<Dashboard> {
     departuresText = await translator.translate('departures', c.locale);
     heartbeatText = await translator.translate('heartbeats', c.locale);
     dispatchesText = await translator.translate('dispatches', c.locale);
-    ownerDashboard = await translator.translate('ownerDash', c.locale);
+    ownerDashboard = await translator.translate('dashboard', c.locale);
     daysText = await translator.translate('days', c.locale);
     historyCars = await translator.translate('historyCars', c.locale);
     passengerCounts = await translator.translate('passengersIn', c.locale);
@@ -164,30 +151,34 @@ class _DashboardState extends State<Dashboard> {
     thisMayTakeMinutes =
         await translator.translate('thisMayTakeMinutes', c.locale);
     errorGettingData = await translator.translate('errorGettingData', c.locale);
-    emailNotFound =
-        await translator.translate('emailNotFound', c.locale);
-    notRegistered =
-        await translator.translate('notRegistered', c.locale);
+    emailNotFound = await translator.translate('emailNotFound', c.locale);
+    notRegistered = await translator.translate('notRegistered', c.locale);
     firstTime = await translator.translate('firstTime', c.locale);
-    changeLanguage =
-        await translator.translate('changeLanguage', c.locale);
+    changeLanguage = await translator.translate('changeLanguage', c.locale);
     welcome = await translator.translate('welcome', c.locale);
     startEmailLinkSignin =
         await translator.translate('signInWithEmail', c.locale);
-    signInWithPhone =
-        await translator.translate('signInWithPhone', c.locale);
+    signInWithPhone = await translator.translate('signInWithPhone', c.locale);
     setState(() {});
   }
 
   Future _navigateToColor() async {
     pp('$mm _navigateToColor ......');
-    await navigateWithScale( LanguageAndColorChooser(onLanguageChosen: (){},), context);
+    await navigateWithScale(
+        LanguageAndColorChooser(
+          onLanguageChosen: () {},
+        ),
+        context);
     colorAndLocale = await prefs.getColorAndLocale();
     await _setTexts();
   }
 
   Future<void> _navigateToEmailAuth() async {
-    var res = await navigateWithScale( DamnEmailLink(onLanguageChosen: (){},), context);
+    var res = await navigateWithScale(
+        DamnEmailLink(
+          onLanguageChosen: () {},
+        ),
+        context);
     pp('\n\n$mm ................ back from sign in: $res');
     user = await prefs.getUser();
     _getData(false);
@@ -199,6 +190,11 @@ class _DashboardState extends State<Dashboard> {
     _getData(false);
   }
 
+  Future<void> _navigateToRouteAssignments() async {
+    await navigateWithScale(const RouteAssigner(), context);
+    user = await prefs.getUser();
+    _getData(false);
+  }
 
   int totalPassengers = 0;
 
@@ -210,7 +206,7 @@ class _DashboardState extends State<Dashboard> {
     try {
       bigBag =
           await listApiDog.getOwnersBag(user!.userId!, date.toIso8601String());
-
+      cars = await listApiDog.getOwnerVehicles(user!.userId!, true);
       pp('$mm _refreshBag: ${E.appleRed} '
           '\n🔴 cars: ${cars.length} '
           '\n🔴 vehicleHeartbeats: ${bigBag?.vehicleHeartbeats.length} '
@@ -224,9 +220,10 @@ class _DashboardState extends State<Dashboard> {
       pp(e);
       if (mounted) {
         showSnackBar(
-          duration: const Duration(seconds: 10),
+            duration: const Duration(seconds: 10),
             backgroundColor: Colors.redAccent,
-            textStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            textStyle: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
             message: errorGettingData == null
                 ? 'Error getting data'
                 : errorGettingData!,
@@ -239,7 +236,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future _getData(bool refresh) async {
-    pp('$mm .... getting owner data ....');
+    pp('$mm ............................ getting owner data ....');
     try {
       setState(() {
         busy = true;
@@ -253,6 +250,8 @@ class _DashboardState extends State<Dashboard> {
       }
       final date = DateTime.now().toUtc().subtract(Duration(days: days));
       cars = await listApiDog.getOwnerVehicles(user!.userId!, refresh);
+      pp('$mm ............................ getting owner data: cars: ${cars.length} .... getting owners bag ...');
+
       bigBag =
           await listApiDog.getOwnersBag(user!.userId!, date.toIso8601String());
 
@@ -272,7 +271,8 @@ class _DashboardState extends State<Dashboard> {
             duration: const Duration(seconds: 10),
             backgroundColor: Colors.red,
             textStyle: const TextStyle(color: Colors.white),
-            message: 'Error getting data: $e', context: context);
+            message: 'Error getting data: $e',
+            context: context);
       }
     }
     setState(() {
@@ -297,13 +297,40 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _navigateToScanner() async {
-    await navigateWithScale(
-        const ScanVehicleForOwner(),
-        context);
+    await navigateWithScale(const ScanVehicleForOwner(), context);
     pp('$mm .... back from car update');
   }
 
   int days = 1;
+
+  void _navigateToPhoneAuth() async {
+    user = await navigateWithScale(
+        CustomPhoneVerification(
+          onUserAuthenticated: (user) {
+            pp('$mm ... _navigateToPhoneAuth: onUserAuthenticated: ${user.name} ... IGNORE??? ');
+            // this.user = user;
+            // _getData(false);
+          },
+          onError: () {
+            if (mounted) {
+              showSnackBar(
+                  message: 'Something went wrong. Please try again',
+                  context: context);
+            }
+          },
+          onCancel: () {},
+          onLanguageChosen: () {
+            _setTexts();
+          },
+        ),
+        context);
+    pp('\n\n\n$mm .... back from CustomPhoneVerification ... check user ...');
+
+    if (user != null) {
+      pp('$mm ... _navigateToPhoneAuth: back from CustomPhoneVerification with user: ${user!.name}');
+      _getData(false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -311,7 +338,7 @@ class _DashboardState extends State<Dashboard> {
         child: Scaffold(
       appBar: AppBar(
         title: Text(
-          ownerDashboard == null ? 'Owner Dashboard' : ownerDashboard!,
+          ownerDashboard == null ? 'Dashboard' : ownerDashboard!,
           style: myTextStyleMediumLarge(context, 18),
         ),
         actions: [
@@ -335,22 +362,19 @@ class _DashboardState extends State<Dashboard> {
               onPressed: () {
                 _navigateToScanner();
               },
-              icon: Icon(Icons.airport_shuttle, color: Theme.of(context).primaryColor)),
+              icon: Icon(Icons.airport_shuttle,
+                  color: Theme.of(context).primaryColor)),
+          IconButton(
+              onPressed: () {
+                _navigateToRouteAssignments();
+              },
+              icon:
+                  Icon(Icons.settings, color: Theme.of(context).primaryColor)),
         ],
       ),
       body: Stack(
         children: [
-          _showVerifier? CustomPhoneVerification(onUserAuthenticated: (user){
-            setState(() {
-              _showDashboard = true;
-              _showVerifier = false;
-            });
-            _getData(false);
-          }, onError: (){}, onCancel: (){}, onLanguageChosen: (){
-            _setTexts();
-          },): const SizedBox(),
-
-          _showDashboard? Padding(
+          Padding(
             padding: const EdgeInsets.all(4.0),
             child: Card(
               shape: getRoundedBorder(radius: 16),
@@ -368,42 +392,43 @@ class _DashboardState extends State<Dashboard> {
                         elevation: 6,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(
-                                height: 64,
-                              ),
-                              Text(numberOfCars == null
-                                  ? 'Number of Cars'
-                                  : numberOfCars!),
-                              const SizedBox(
-                                width: 12,
-                              ),
-                              Text(
-                                '${cars.length}',
-                                style: myTextStyleMediumLargeWithColor(
-                                    context,
-                                    Theme.of(context).primaryColor,
-                                    36),
-                              ),
-                            ],
+                          child: ElevatedButton.icon(
+                            onPressed: () {},
+                            icon: const Icon(Icons.list),
+                            style: const ButtonStyle(
+                              elevation: MaterialStatePropertyAll(8),
+                            ),
+                            label: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const SizedBox(
+                                  height: 64,
+                                ),
+                                Text(numberOfCars == null
+                                    ? 'Number of Cars'
+                                    : numberOfCars!),
+                                const SizedBox(
+                                  width: 12,
+                                ),
+                                Text(
+                                  '${cars.length}',
+                                  style: myTextStyleMediumLargeWithColor(
+                                      context, Colors.black, 20),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 8,
-                    ),
+                    gapH16,
                     user == null
                         ? const Text('....')
                         : Text(
-                      user!.name,
-                      style: myTextStyleSmall(context),
-                    ),
-                    const SizedBox(
-                      height: 64,
-                    ),
+                            user!.name,
+                            style: myTextStyleSmall(context),
+                          ),
+                    gapH16,
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -413,17 +438,13 @@ class _DashboardState extends State<Dashboard> {
                               : historyCars!,
                           style: myTextStyleMedium(context),
                         ),
-                        const SizedBox(
-                          width: 20,
-                        ),
+                        gapW16,
                         Text(
                           '$days',
-                          style: myTextStyleMediumLargeWithColor(context,
-                              Theme.of(context).primaryColor, 24),
+                          style: myTextStyleMediumLargeWithColor(
+                              context, Theme.of(context).primaryColor, 20),
                         ),
-                        const SizedBox(
-                          width: 12,
-                        ),
+                        gapW32,
                         DaysDropDown(
                             onDaysPicked: (d) {
                               setState(() {
@@ -434,33 +455,37 @@ class _DashboardState extends State<Dashboard> {
                             hint: daysText == null ? 'Days' : daysText!),
                       ],
                     ),
-                    const SizedBox(
-                      height: 48,
-                    ),
-                    bigBag == null
-                        ? const SizedBox()
-                        : Expanded(
-                      child: CountsGridWidget(
-                        passengerCounts: totalPassengers,
-                        arrivalsText: arrivalsText!,
-                        departuresText: departuresText!,
-                        dispatchesText: dispatchesText!,
-                        heartbeatText: heartbeatText!,
-                        arrivals: bigBag!.vehicleArrivals.length,
-                        departures:
-                        bigBag!.vehicleDepartures.length,
-                        heartbeats:
-                        bigBag!.vehicleHeartbeats.length,
-                        dispatches: bigBag!.dispatchRecords.length,
-                        passengerCountsText: passengerCounts!,
+                    gapH16,
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: CountsGridWidget(
+                          passengerCounts: totalPassengers,
+                          arrivalsText: arrivalsText!,
+                          departuresText: departuresText!,
+                          dispatchesText: dispatchesText!,
+                          heartbeatText: heartbeatText!,
+                          arrivals: bigBag == null
+                              ? 0
+                              : bigBag!.vehicleArrivals.length,
+                          departures: bigBag == null
+                              ? 0
+                              : bigBag!.vehicleDepartures.length,
+                          heartbeats: bigBag == null
+                              ? 0
+                              : bigBag!.vehicleHeartbeats.length,
+                          dispatches: bigBag == null
+                              ? 0
+                              : bigBag!.dispatchRecords.length,
+                          passengerCountsText: passengerCounts!,
+                        ),
                       ),
                     )
                   ],
                 ),
               ),
             ),
-          ): const SizedBox(),
-
+          ),
           busy
               ? Positioned(
                   left: 12,

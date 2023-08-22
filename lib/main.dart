@@ -9,10 +9,10 @@ import 'package:kasie_transie_library/utils/error_handler.dart';
 import 'package:kasie_transie_library/utils/functions.dart';
 import 'package:kasie_transie_library/widgets/auth/damn_email_link.dart';
 import 'package:kasie_transie_library/widgets/splash_page.dart';
-import 'package:kasie_transie_route_builder/ui/dashboard.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'firebase_options.dart';
+import 'ui/dashboard.dart';
 const mx = '🔵🔵🔵🔵🔵🔵🔵🔵🔵🔵 KasieTransie OWNER : main 🔵🔵';
 const projectId = '';
 fb.User? fbAuthedUser;
@@ -80,7 +80,7 @@ class OwnerApp extends StatelessWidget {
                   animationDuration: const Duration(milliseconds: 2000),
                   curve: Curves.easeInCirc,
                   splashIconSize: 160.0,
-                  nextScreen: const Dashboard(),
+                  nextScreen: const OwnerDashboard(),
                   splashTransition: SplashTransition.fadeTransition,
                   pageTransitionType: PageTransitionType.leftToRight,
                   backgroundColor: Colors.blue.shade900,
