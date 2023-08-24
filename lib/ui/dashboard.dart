@@ -54,6 +54,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
   late StreamSubscription<lib.VehicleArrival> arrivalStreamSub;
   late StreamSubscription<lib.VehicleDeparture> departureStreamSub;
   late StreamSubscription<lib.LocationResponse> locResponseStreamSub;
+  late StreamSubscription<List<lib.Vehicle>> vehiclesStreamSub;
 
   String notRegistered =
       'You are not registered yet. Please call your administrator';
@@ -84,6 +85,16 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
 
   void _initialize() async {
     fcmBloc.subscribeForOwnerMarshalOfficialAmbassador('OwnerApp');
+    pp('$mm ... listen to streams ........ ');
+    vehiclesStreamSub =
+        listApiDog.vehiclesStream.listen((List<lib.Vehicle> list) {
+      pp('$mm ... listApiDog.vehiclesStream delivered vehicles for: ${list.length}');
+      cars = list;
+      // _refreshBag();
+      if (mounted) {
+        setState(() {});
+      }
+    });
     departureStreamSub =
         fcmBloc.vehicleDepartureStream.listen((lib.VehicleDeparture departure) {
       pp('$mm ... fcmBloc.vehicleDepartureStream delivered vehicle departure for: ${departure.vehicleReg}');
@@ -288,6 +299,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
   }
 
   Future<void> _navigateToCarList() async {
+    pp('$mm .... _navigateToCarList ..........');
     await navigateWithScale(
         CarList(
           ownerId: user!.userId,
@@ -301,7 +313,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
     pp('$mm .... back from car update');
   }
 
-  int days = 1;
+  int days = 7;
 
   void _navigateToPhoneAuth() async {
     user = await navigateWithScale(
@@ -383,44 +395,6 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        _navigateToCarList();
-                      },
-                      child: Card(
-                        shape: getRoundedBorder(radius: 16),
-                        elevation: 6,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ElevatedButton.icon(
-                            onPressed: () {},
-                            icon: const Icon(Icons.list),
-                            style: const ButtonStyle(
-                              elevation: MaterialStatePropertyAll(8),
-                            ),
-                            label: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const SizedBox(
-                                  height: 64,
-                                ),
-                                Text(numberOfCars == null
-                                    ? 'Number of Cars'
-                                    : numberOfCars!),
-                                const SizedBox(
-                                  width: 12,
-                                ),
-                                Text(
-                                  '${cars.length}',
-                                  style: myTextStyleMediumLargeWithColor(
-                                      context, Colors.black, 20),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                     gapH16,
                     user == null
                         ? const Text('....')
@@ -436,7 +410,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
                           historyCars == null
                               ? 'History for all cars'
                               : historyCars!,
-                          style: myTextStyleMedium(context),
+                          style: myTextStyleSmall(context),
                         ),
                         gapW16,
                         Text(
@@ -455,32 +429,55 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
                             hint: daysText == null ? 'Days' : daysText!),
                       ],
                     ),
+                    gapH32,
                     gapH16,
-                    Expanded(
+                    SizedBox(width: 300,
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: CountsGridWidget(
-                          passengerCounts: totalPassengers,
-                          arrivalsText: arrivalsText!,
-                          departuresText: departuresText!,
-                          dispatchesText: dispatchesText!,
-                          heartbeatText: heartbeatText!,
-                          arrivals: bigBag == null
-                              ? 0
-                              : bigBag!.vehicleArrivals.length,
-                          departures: bigBag == null
-                              ? 0
-                              : bigBag!.vehicleDepartures.length,
-                          heartbeats: bigBag == null
-                              ? 0
-                              : bigBag!.vehicleHeartbeats.length,
-                          dispatches: bigBag == null
-                              ? 0
-                              : bigBag!.dispatchRecords.length,
-                          passengerCountsText: passengerCounts!,
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            _navigateToCarList();
+
+                          },
+                          icon: const Icon(Icons.list),
+                          style: const ButtonStyle(
+                            elevation: MaterialStatePropertyAll(12),
+                          ),
+                          label: const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: SizedBox(width: 200, child: Text('View Cars')),
+                          ),
                         ),
                       ),
-                    )
+                    ),
+
+                    arrivalsText == null
+                        ? gapW16
+                        : Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: CountsGridWidget(
+                                passengerCounts: totalPassengers,
+                                arrivalsText: arrivalsText!,
+                                departuresText: departuresText!,
+                                dispatchesText: dispatchesText!,
+                                heartbeatText: heartbeatText!,
+                                arrivals: bigBag == null
+                                    ? 0
+                                    : bigBag!.vehicleArrivals.length,
+                                departures: bigBag == null
+                                    ? 0
+                                    : bigBag!.vehicleDepartures.length,
+                                heartbeats: bigBag == null
+                                    ? 0
+                                    : bigBag!.vehicleHeartbeats.length,
+                                dispatches: bigBag == null
+                                    ? 0
+                                    : bigBag!.dispatchRecords.length,
+                                passengerCountsText: passengerCounts!,
+                              ),
+                            ),
+                          )
                   ],
                 ),
               ),
@@ -499,6 +496,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
                     subTitle: thisMayTakeMinutes == null
                         ? 'This may take a few minutes'
                         : thisMayTakeMinutes!,
+                    isSmallSize: false,
                   ))
               : const SizedBox(),
         ],
