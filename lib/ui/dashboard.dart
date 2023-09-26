@@ -21,6 +21,7 @@ import 'package:kasie_transie_library/widgets/scanners/scan_vehicle_for_owner.da
 import 'package:kasie_transie_library/widgets/timer_widget.dart';
 import 'package:kasie_transie_library/widgets/vehicle_widgets/car_list.dart';
 import 'package:kasie_transie_library/widgets/vehicle_widgets/route_assigner.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class OwnerDashboard extends StatefulWidget {
   const OwnerDashboard({Key? key}) : super(key: key);
@@ -143,8 +144,18 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
     if (user == null) {
       _navigateToPhoneAuth();
     } else {
+      _getPermission();
       _getData(false);
     }
+  }
+
+  void _getPermission() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.location,
+      Permission.storage,
+      Permission.camera,
+    ].request();
+    pp('$mm PermissionStatus: statuses: $statuses');
   }
 
   Future _setTexts() async {
@@ -227,8 +238,8 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
           '\n🔴 vehicleDepartures: ${bigBag?.vehicleDepartures.length}');
 
       _calculateTotalPassengers();
-    } catch (e) {
-      pp(e);
+    } catch (e, stack) {
+      pp('$mm $e  - $stack');
       if (mounted) {
         showSnackBar(
             duration: const Duration(seconds: 10),
@@ -261,11 +272,10 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
       }
       final date = DateTime.now().toUtc().subtract(Duration(days: days));
       cars = await listApiDog.getOwnerVehicles(user!.userId!, refresh);
-      pp('$mm ............................ getting owner data: cars: ${cars.length} .... getting owners bag ...');
+      pp('$mm ............................ getting owner data: cars: ${cars.length}');
 
       bigBag =
           await listApiDog.getOwnersBag(user!.userId!, date.toIso8601String());
-
       pp('$mm _getData .. owner bag: ${E.appleRed} '
           '\n🔴 cars: ${cars.length} '
           '\n🔴 vehicleHeartbeats: ${bigBag?.vehicleHeartbeats.length} '
@@ -275,8 +285,8 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
           '\n🔴 vehicleDepartures: ${bigBag?.vehicleDepartures.length}');
 
       _calculateTotalPassengers();
-    } catch (e) {
-      pp(e);
+    } catch (e, stack) {
+      pp('$mm $e  - $stack');
       if (mounted) {
         showSnackBar(
             duration: const Duration(seconds: 10),
@@ -431,13 +441,13 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
                     ),
                     gapH32,
                     gapH16,
-                    SizedBox(width: 300,
+                    SizedBox(
+                      width: 300,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton.icon(
                           onPressed: () {
                             _navigateToCarList();
-
                           },
                           icon: const Icon(Icons.list),
                           style: const ButtonStyle(
@@ -445,12 +455,12 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
                           ),
                           label: const Padding(
                             padding: EdgeInsets.all(16.0),
-                            child: SizedBox(width: 200, child: Text('View Cars')),
+                            child:
+                                SizedBox(width: 200, child: Text('View Cars')),
                           ),
                         ),
                       ),
                     ),
-
                     arrivalsText == null
                         ? gapW16
                         : Expanded(
@@ -489,14 +499,16 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
                   right: 12,
                   bottom: 60,
                   top: 60,
-                  child: TimerWidget(
-                    title: loadingOwnerData == null
-                        ? 'Loading Owner data'
-                        : loadingOwnerData!,
-                    subTitle: thisMayTakeMinutes == null
-                        ? 'This may take a few minutes'
-                        : thisMayTakeMinutes!,
-                    isSmallSize: false,
+                  child: Center(
+                    child: TimerWidget(
+                      title: loadingOwnerData == null
+                          ? 'Loading Owner data'
+                          : loadingOwnerData!,
+                      subTitle: thisMayTakeMinutes == null
+                          ? 'This may take a few minutes'
+                          : thisMayTakeMinutes!,
+                      isSmallSize: true,
+                    ),
                   ))
               : const SizedBox(),
         ],

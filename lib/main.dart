@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart' as fb;
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:kasie_transie_library/bloc/getit_initializer.dart';
 import 'package:kasie_transie_library/bloc/theme_bloc.dart';
 import 'package:kasie_transie_library/utils/error_handler.dart';
 import 'package:kasie_transie_library/utils/functions.dart';
@@ -26,6 +27,8 @@ Future<void> main() async {
       options: DefaultFirebaseOptions.currentPlatform);
   pp('\n\n$mx '
       ' Firebase App has been initialized: ${app.name}, checking for authed current user\n');
+  final mLoc = LocatorInitializer();
+  mLoc.setup();
   fbAuthedUser = fb.FirebaseAuth.instance.currentUser;
   if (fbAuthedUser != null) {
     pp('$mx fbAuthUser: ${fbAuthedUser!.uid}');

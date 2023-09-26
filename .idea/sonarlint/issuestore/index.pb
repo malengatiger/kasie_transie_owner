@@ -53,8 +53,6 @@ F
 android/key.properties,b/7/b7b931b9eee910382a21f6e7a62b187e433450c1
 4
 .env,3/c/3c84dcdc6bbe3d7817c49dcdc327b926fea1808a
-G
-kasie_transie_owner.iml,c/c/cc6ec8303d707d4b4f2a1f6dc0b20c67b14113f8
 :
 
 .gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
@@ -74,8 +72,6 @@ Y
 )android/app/src/debug/AndroidManifest.xml,e/9/e9b8a57f79617fe2b2612f997e0f60425ebc5097
 [
 +android/app/src/profile/AndroidManifest.xml,d/2/d2c744cc316dff823a081098f4a97f18cd817497
-L
-ios/Runner/AppDelegate.swift,8/4/84700e47abd691450c7da01b0aa772b1d41e4838
 N
 macos/Runner/AppDelegate.swift,e/4/e4af6d2ff916ed239a94327f37e5d2799d045b84
 R
@@ -100,8 +96,6 @@ m
 =macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json,c/c/ccda4447e6f06d9eaacfac32201bb48fa6c57978
 q
 Aios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata,9/c/9c173bf7e10bf1842348f8d4e94f7e9c3a4d09df
-_
-/ios/Runner.xcworkspace/contents.xcworkspacedata,1/e/1e052c7fea28110b0230b054db0d863777c4863f
 a
 1macos/Runner.xcworkspace/contents.xcworkspacedata,d/5/d5ec1edba6b372bf6021ad9a30635aa7491da466
 J
@@ -136,8 +130,6 @@ n
 >macos/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist,f/0/f0fba35a1dc47e61fa539dd6c0357fc0afb69aea
 >
 web/index.html,4/9/49767019a2fee22a613912508aa2789b74108680
-E
-ios/Runner/Info.plist,7/0/7076b60f5e64ebfddc934ae3c4a7a7b87e461a6f
 G
 macos/Runner/Info.plist,6/a/6aa84570038895fdfc615cade318abb9ce846e7b
 g
@@ -164,8 +156,6 @@ G
 linux/my_application.cc,9/9/995c5ee66ec6a6d46ba2668734a5503c7d0cdf32
 F
 linux/my_application.h,a/5/a56e4501a358577d0ee3aebac03b481b676cfc32
-T
-$ios/Runner.xcodeproj/project.pbxproj,1/c/1cac92320f17044ec005b6a831fa994f54fba1bc
 V
 &macos/Runner.xcodeproj/project.pbxproj,3/1/31740756e7b30b7d19cf1933c368ae7438ea33ef
 i
@@ -182,8 +172,6 @@ R
 "windows/runner/runner.exe.manifest,d/b/db74675c74ce360873d6e454daf2092487c293d4
 H
 windows/runner/Runner.rc,e/3/e37ad19aa89db29acd2516536be96b72ca8de4bf
-k
-;ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme,4/1/415f525025d2a854fce8d86570ada9443c42c5a6
 m
 =macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme,3/1/3148bc763b53b8b8750bb6c9a3d55991c96b1aeb
 S
@@ -220,8 +208,6 @@ H
 android/app/build.gradle,5/9/594ba479000e0bb5513707b709ad1cd52da9063a
 X
 (android/app/src/main/AndroidManifest.xml,e/f/ef79bfd51db69a15dbf5807c05bb249bdccb0556
-S
-#.idea/libraries/Flutter_Plugins.xml,e/8/e8bbc0fdfcefee9aa7b463c83a8a480b92333860
 C
 assets/l10n/af.json,d/5/d561064bc56d00f90fac4be2dd98ed7db721b097
 C
@@ -240,11 +226,35 @@ C
 ,linux/flutter/generated_plugin_registrant.cc,8/2/82aa08567025817252f7150da6951611f932fce3
 U
 %linux/flutter/generated_plugins.cmake,e/a/ea61ff9ff38cb6431283c0e1c4f383234ad068aa
-]
--macos/Flutter/GeneratedPluginRegistrant.swift,0/2/021794e7deab8f440a40813c70fb58a0cddd4d00
 ^
 .windows/flutter/generated_plugin_registrant.cc,a/4/a460a0a443b57f23ba67cbcc77064889847c76a7
 W
 'windows/flutter/generated_plugins.cmake,8/8/88ca6865187a33a9504c7309c5e20c833b7b0094
+H
+android/fastlane/Appfile,f/1/f17e8d99b1ca7641da2f439cf073dd3d3fda473c
+I
+android/fastlane/Fastfile,1/c/1c446dabad14fadfd63013960667e71b3f5123eb
+?
+android/Gemfile,3/a/3a9939ca8e8405b456702e749433f6a9bd470125
+D
+android/Gemfile.lock,a/a/aa9a1908ee5dd8c4b83a351b4b65e96e56b53bbb
+C
+assets/l10n/de.json,8/a/8adabfc11fe9b5afd66c0fda54313d697a3de534
+C
+assets/l10n/es.json,0/c/0c2aeee561efc293de02d8529db50e7b1302940a
+C
+assets/l10n/pt.json,f/5/f57be9274a6ec6729aaaa2120252ab59a8b0c284
+C
+assets/l10n/st.json,1/9/19cbced6cd2b02266f6cd706a9cdede23245ee37
+C
+assets/l10n/sw.json,a/6/a63599a388ef23697d38c57e0359bf3f9e26e513
+C
+assets/l10n/ts.json,6/5/65a8c37e4896a4092c4c5167fb6fab7e66e282fa
+<
+Gemfile.lock,2/1/21fb5836b499a2be648386aac055d2e069160d6c
+7
+Gemfile,d/e/de3150c01c3a946a6168173c4116741379fe3579
+;
+ios/Gemfile,3/9/39f88f288bd13f54843f5f9af6cb42d714112c0b
 <
 pubspec.yaml,e/8/e8e045469170189f1d6ef12576bd01af132b1018
