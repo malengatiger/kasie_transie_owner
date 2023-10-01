@@ -53,11 +53,6 @@ F
 android/key.properties,b/7/b7b931b9eee910382a21f6e7a62b187e433450c1
 4
 .env,3/c/3c84dcdc6bbe3d7817c49dcdc327b926fea1808a
-:
-
-.gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
-I
-lib/generated/assets.dart,5/b/5b815209f3ac1d4b94a4211dbfb903428d4ed1c2
 U
 %macos/Runner/Configs/Release.xcconfig,8/9/898646aca0a3b8bc3456595893ae3275c2226988
 U
@@ -206,8 +201,6 @@ D
 android/build.gradle,1/3/13f012f60e18f38225ce59137db2e07d5d70b29c
 H
 android/app/build.gradle,5/9/594ba479000e0bb5513707b709ad1cd52da9063a
-X
-(android/app/src/main/AndroidManifest.xml,e/f/ef79bfd51db69a15dbf5807c05bb249bdccb0556
 W
 'windows/flutter/generated_plugins.cmake,8/8/88ca6865187a33a9504c7309c5e20c833b7b0094
 ^
@@ -256,5 +249,3 @@ C
 Gemfile,d/e/de3150c01c3a946a6168173c4116741379fe3579
 ;
 ios/Gemfile,3/9/39f88f288bd13f54843f5f9af6cb42d714112c0b
-<
-pubspec.yaml,e/8/e8e045469170189f1d6ef12576bd01af132b1018

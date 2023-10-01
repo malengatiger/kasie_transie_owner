@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart' as fb;
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:kasie_transie_library/bloc/get_it_initializer.dart';
 import 'package:kasie_transie_library/bloc/getit_initializer.dart';
 import 'package:kasie_transie_library/bloc/theme_bloc.dart';
 import 'package:kasie_transie_library/utils/error_handler.dart';
@@ -36,7 +37,7 @@ Future<void> main() async {
   } else {
     pp('$mx fbAuthUser: is null. Need to authenticate the app!');
   }
-
+  getItInitializer.registerServices();
   final action = ActionCodeSettings(
     url: 'https://kasietransieowner.page.link/29hQ',
     handleCodeInApp: true,
